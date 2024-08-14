@@ -25,7 +25,7 @@ import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
-import logo from '../Assets/cassilogo.png'
+import logo from '../Assets/cassimainlogo.png'
 import Uae from '../Assets/uae.png'
 import Us from '../Assets/UsFlag.webp'
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -51,12 +51,17 @@ const Root = styled(Box)({
     },
     "& .MuiListItemIcon-root": {
         minWidth: "36px",
+    },
+    "& .countryImage": {
+        borderRadius: "50%",
+        objectFit: "cover"
+
     }
 
 });
 
 
-const drawerWidth = 240;
+const drawerWidth = 260;
 
 function ResponsiveDrawer(props) {
     const { window } = props;
@@ -66,7 +71,7 @@ function ResponsiveDrawer(props) {
     const menuList = [
         { name: "Dashboard", url: "/dashboard" },
         { name: "User", url: "/user" },
-        { name: "Activity Report", url: "/expensereports" },
+        { name: "Expense Report", url: "/expensereporttable" },
         { name: "Activity Report", url: "/activityreport" },
         { name: "Advanced Settings and Management", url: "/advancesetting" },
         { name: "Reports and Export", url: "/reportsandexport" },
@@ -110,10 +115,9 @@ function ResponsiveDrawer(props) {
         <Root>
             <Box>
                 <Toolbar />
-                <Box sx={{ display: "flex", justifyContent: "center", height: "50px", }}>
-                    <img src={logo} alt="logo" />
+                <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100px", }}>
+                    <img src={logo} width='90%' alt="logo" />
                 </Box>
-                <Divider />
                 <List>
                     {menuList.map((e, index) => (
                         <ListItem key={e.name} onClick={() => handleRoutes(e.url)} disablePadding>
@@ -199,8 +203,8 @@ function ResponsiveDrawer(props) {
                             </Box>
                             <Box sx={{ display: "flex", gap: "20px", alignItems: "center" }}>
                                 <Box sx={{ display: "flex", alignItems: "center" }}>
-                                    <Box sx={{ width: "30px", height: "30px", borderRadius: "50%", border: "1px solid black", overflow: "hidden" }}>
-                                        <img src={Uae} alt="" width="100%" />
+                                    <Box sx={{ width: "30px", height: "30px", overflow: "hidden" }}>
+                                        <img className='countryImage' src={Uae} alt="" height='100%' width="100%" />
                                         {/* <img src={Us} alt="" /> */}
                                     </Box>
                                     <FormControl sx={{ m: 1, minWidth: 120 }}>

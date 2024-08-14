@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from '@emotion/styled';
+import styled from '@emotion/styled'; // This is correct
 import Box from '@mui/material/Box';
 import { Button, Typography } from '@mui/material';
 import Tab from '@mui/material/Tab';
@@ -7,6 +7,9 @@ import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
+import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
+import logo from '../../Assets/cassilogo.png'
+import { MuiColorInput } from 'mui-color-input'
 
 
 const Root = styled(Box)(({ theme }) => ({
@@ -23,6 +26,11 @@ const Root = styled(Box)(({ theme }) => ({
 }));
 
 export default function AdvancedSettingAndManagement() {
+    const [colorValue, setColorValue] = React.useState('#ffffff')
+
+    const handleColorChange = (newValue) => {
+        setColorValue(newValue)
+    }
     const [value, setValue] = React.useState('1');
 
     const handleChange = (event, newValue) => {
@@ -64,8 +72,8 @@ export default function AdvancedSettingAndManagement() {
                                 <Box sx={{ borderBottom: 3, borderColor: 'divider' }}>
                                     <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                                         <Box>
-                                            <Typography sx={{ fontWeight: "600" }}>Create Teams</Typography>
-                                            <Typography sx={{ color: "#959595" }}>Create Departments</Typography>
+                                            <Typography sx={{ fontWeight: "600" }}>Create Departments</Typography>
+                                            <Typography sx={{ color: "#959595" }}>Developement team</Typography>
                                         </Box>
                                         <Box>
                                             <CreateOutlinedIcon />
@@ -75,18 +83,7 @@ export default function AdvancedSettingAndManagement() {
                                 <Box sx={{ borderBottom: 3, borderColor: 'divider' }}>
                                     <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                                         <Box>
-                                            <Typography sx={{ fontWeight: "600" }}>Create Teams</Typography>
-                                            <Typography sx={{ color: "#959595" }}>Create Departments</Typography>
-                                        </Box>
-                                        <Box>
-                                            <CreateOutlinedIcon />
-                                        </Box>
-                                    </Box>
-                                </Box>
-                                <Box sx={{ borderBottom: 3, borderColor: 'divider' }}>
-                                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                        <Box>
-                                            <Typography sx={{ fontWeight: "600" }}>Create Teams</Typography>
+                                            <Typography sx={{ fontWeight: "600" }}>Create Roles</Typography>
                                             <Typography sx={{ color: "#959595" }}>Developement team</Typography>
                                         </Box>
                                         <Box>
@@ -131,8 +128,34 @@ export default function AdvancedSettingAndManagement() {
                                             <Typography sx={{ color: "#959595" }}>Carlos Fonte</Typography>
                                         </Box>
                                         <Box>
-                                            <CreateOutlinedIcon />
+                                            <DeleteOutlinedIcon />
                                         </Box>
+                                    </Box>
+                                </Box>
+                                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-around" }}>
+                                    <Box>
+                                        <Typography variant='h6' fontWeight='bold'>Logo</Typography>
+                                        <Box sx={{ height: "200px", width: "250px" }}>
+                                            <img src={logo} height='100%' width='100%' alt="" />
+                                        </Box>
+                                        <Box>
+                                            <Button size="large">Remove</Button>
+                                            <Button size="large" variant="contained">Change Logo</Button>
+                                        </Box>
+                                    </Box>
+                                    <Box>
+                                        <Typography variant='h6' fontWeight='bold'>Login Screen Logo</Typography>
+                                        <Box sx={{ height: "200px", width: "250px" }}>
+                                            <img src={logo} height='100%' width='100%' alt="" />
+                                        </Box>
+                                        <Box>
+                                            <Button size="large">Remove</Button>
+                                            <Button size="large" variant="contained">Change Logo</Button>
+                                        </Box>
+                                    </Box>
+                                    <Box>
+                                        <Typography variant='h6' fontWeight='bold'>Background Color</Typography>
+                                        <MuiColorInput format="hex" value={colorValue} onChange={handleColorChange} />
                                     </Box>
                                 </Box>
                             </TabPanel>
@@ -144,6 +167,6 @@ export default function AdvancedSettingAndManagement() {
                 </Box>
 
             </Box>
-        </Root>
+        </Root >
     );
 }

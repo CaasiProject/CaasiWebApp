@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Checkbox,
     Typography, Button, Pagination, Menu, MenuItem, Box
@@ -7,7 +7,7 @@ import IconButton from '@mui/material/IconButton';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { MoreVert } from '@mui/icons-material';
-import { styled } from '@mui/system';
+import styled from '@emotion/styled'; // This is correct
 import ArrowDropDownOutlinedIcon from '@mui/icons-material/ArrowDropDownOutlined';
 import ArrowDropUpOutlinedIcon from '@mui/icons-material/ArrowDropUpOutlined';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -19,13 +19,12 @@ const StatusButton = styled(Button)(({ status }) => ({
 }));
 
 const tableData = [
-    { id: 1, name: 'Albert Flores', lastName: 'Flores', contact: '$1000', date: '23 Feb 2024', status: 'Approved' },
-    { id: 2, name: 'Wade Warren', lastName: 'Warren', contact: '$1000', date: '23 Feb 2024', status: 'Approved' },
-    { id: 3, name: 'Ronald Richards', lastName: 'Richards', contact: '$1000', date: '23 Feb 2024', status: 'Pending' },
-    { id: 4, name: 'Courtney Henry', lastName: 'Courtney', contact: '$1000', date: '23 Feb 2024', status: 'Rejected' },
-    { id: 4, name: 'Courtney Henry', lastName: 'Courtney', contact: '$1000', date: '23 Feb 2024', status: 'Rejected' },
-    { id: 4, name: 'Courtney Henry', lastName: 'Courtney', contact: '$1000', date: '23 Feb 2024', status: 'Rejected' },
-
+    { id: 1, name: 'Albert Flores', lastName: 'Flores', contact: 'has@gmail.com', phone: '(+62) 21-2323-3434', date: '23 Feb 2024', status: 'Approved' },
+    { id: 2, name: 'Wade Warren', lastName: 'Warren', contact: 'has@gmail.com', phone: '(+62) 21-2323-3434', date: '23 Feb 2024', status: 'Approved' },
+    { id: 3, name: 'Ronald Richards', lastName: 'Richards', contact: 'has@gmail.com', phone: '(+62) 21-2323-3434', date: '23 Feb 2024', status: 'Pending' },
+    { id: 4, name: 'Courtney Henry', lastName: 'Courtney', contact: 'has@gmail.com', phone: '(+62) 21-2323-3434', date: '23 Feb 2024', status: 'Rejected' },
+    { id: 5, name: 'Courtney Henry', lastName: 'Courtney', contact: 'has@gmail.com', phone: '(+62) 21-2323-3434', date: '23 Feb 2024', status: 'Rejected' },
+    { id: 6, name: 'Courtney Henry', lastName: 'Courtney', contact: 'has@gmail.com', phone: '(+62) 21-2323-3434', date: '23 Feb 2024', status: 'Rejected' },
     // Add more rows as necessary
 ];
 
@@ -68,16 +67,20 @@ const Root = styled(Box)({
             padding: 0,
             color: "#FFFFFF"
         },
+        "& .css-1ygcj2i-MuiTableCell-root": {
+            width: "25%"
+        },
     }
 });
 
 function ActivityReport() {
-    const [age, setAge] = React.useState('');
+    const [selected, setSelected] = useState([]);
+    const [age, setAge] = useState('');
+    const [anchorEl, setAnchorEl] = useState(null);
 
     const handleChange = (event) => {
         setAge(event.target.value);
     };
-    const [anchorEl, setAnchorEl] = React.useState(null);
 
     const handleMenuClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -86,6 +89,37 @@ function ActivityReport() {
     const handleMenuClose = () => {
         setAnchorEl(null);
     };
+
+    const handleSelectAllClick = (event) => {
+        if (event.target.checked) {
+            const newSelected = tableData.map((row) => row.id);
+            setSelected(newSelected);
+        } else {
+            setSelected([]);
+        }
+    };
+
+    const handleCheckboxClick = (id) => {
+        const selectedIndex = selected.indexOf(id);
+        let newSelected = [];
+
+        if (selectedIndex === -1) {
+            newSelected = newSelected.concat(selected, id);
+        } else if (selectedIndex === 0) {
+            newSelected = newSelected.concat(selected.slice(1));
+        } else if (selectedIndex === selected.length - 1) {
+            newSelected = newSelected.concat(selected.slice(0, -1));
+        } else if (selectedIndex > 0) {
+            newSelected = newSelected.concat(
+                selected.slice(0, selectedIndex),
+                selected.slice(selectedIndex + 1),
+            );
+        }
+
+        setSelected(newSelected);
+    };
+
+    const isSelected = (id) => selected.indexOf(id) !== -1;
 
     return (
         <Root>
@@ -148,7 +182,12 @@ function ActivityReport() {
                         <TableHead sx={{ backgroundColor: "#0171BC" }}>
                             <TableRow>
                                 <TableCell padding="checkbox">
-                                    <Checkbox sx={{ color: "#ffffff" }} />
+                                    <Checkbox
+                                        sx={{ color: "#ffffff" }}
+                                        indeterminate={selected.length > 0 && selected.length < tableData.length}
+                                        checked={tableData.length > 0 && selected.length === tableData.length}
+                                        onChange={handleSelectAllClick}
+                                    />
                                 </TableCell>
                                 <TableCell>
                                     <Box className="TableTags">
@@ -173,54 +212,80 @@ function ActivityReport() {
                                     <Box className="TableTags">
                                         <Typography className='TableTagsTexts'>Date</Typography>
                                         <Box className="UpDownIcon">
-                                            <ArrowDropUpOutlinedIcon className='upIcon' sx={{}} />
+                                            <ArrowDropUpOutlinedIcon className='upIcon' />
                                             <ArrowDropDownOutlinedIcon className='downIcon' />
                                         </Box>
                                     </Box>
                                 </TableCell>
                                 <TableCell>
-                                    <Typography className='TableTagsTexts'>Status</Typography>
+                                    <Box className="TableTags">
+                                        <Typography className='TableTagsTexts'>Status</Typography>
+                                    </Box>
                                 </TableCell>
                                 <TableCell>
-                                    <Typography className='TableTagsTexts'>Action</Typography>
+                                    <Box className="TableTags">
+                                        <Typography className='TableTagsTexts'>Action</Typography>
+
+                                    </Box>
                                 </TableCell>
+                                <TableCell padding="checkbox" />
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {tableData.map((row) => (
-                                <TableRow key={row.id}>
-                                    <TableCell padding="checkbox">
-                                        <Checkbox />
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="body2">{row.name}</Typography>
-                                        <Typography variant="caption" color="textSecondary">{row.lastName}</Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="body2" sx={{ color: '#007bff' }}>{row.contact}</Typography>
-                                    </TableCell>
-                                    <TableCell>{row.date}</TableCell>
-                                    <TableCell>
-                                        <StatusButton sx={{ width: "104px", textTransform: "none" }} status={row.status}>{row.status}</StatusButton>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Box sx={{ display: "flex", gap: "50px", alignItems: "center" }}>
-                                            <IconButton onClick={handleMenuClick}>
-                                                <MoreVert />
-                                            </IconButton>
+                            {tableData.map((row) => {
+                                const isItemSelected = isSelected(row.id);
+                                return (
+                                    <TableRow
+                                        key={row.id}
+                                        hover
+                                        role="checkbox"
+                                        aria-checked={isItemSelected}
+                                        selected={isItemSelected}
+                                    >
+                                        <TableCell padding="checkbox">
+                                            <Checkbox
+                                                checked={isItemSelected}
+                                                onClick={() => handleCheckboxClick(row.id)}
+                                            />
+                                        </TableCell>
+                                        <TableCell>{row.name} {row.lastName}</TableCell>
+                                        <TableCell>{row.contact}<br />{row.phone}</TableCell>
+                                        <TableCell>{row.date}</TableCell>
+                                        <TableCell>
+                                            <StatusButton status={row.status}>
+                                                {row.status}
+                                            </StatusButton>
+                                        </TableCell>
+                                        <TableCell >
+                                            <Box sx={{ display: "flex" }}>
+                                                <Box>
+                                                    <IconButton
+                                                        aria-label="more"
+                                                        aria-controls="long-menu"
+                                                        aria-haspopup="true"
+                                                        onClick={handleMenuClick}
+                                                    >
+                                                        <MoreVert />
+                                                    </IconButton>
+                                                </Box>
+                                                <Box>
+                                                    <IconButton>
+                                                        <KeyboardArrowDownIcon />                                                    </IconButton>
+                                                </Box>
+                                            </Box>
                                             <Menu
                                                 anchorEl={anchorEl}
+                                                keepMounted
                                                 open={Boolean(anchorEl)}
                                                 onClose={handleMenuClose}
                                             >
-                                                <MenuItem onClick={handleMenuClose}>Action 1</MenuItem>
-                                                <MenuItem onClick={handleMenuClose}>Action 2</MenuItem>
+                                                <MenuItem onClick={handleMenuClose}>Edit</MenuItem>
+                                                <MenuItem onClick={handleMenuClose}>Delete</MenuItem>
                                             </Menu>
-                                            <KeyboardArrowDownIcon />
-                                        </Box>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                                        </TableCell>
+                                    </TableRow>
+                                );
+                            })}
                         </TableBody>
                     </Table>
                 </TableContainer>
@@ -231,7 +296,7 @@ function ActivityReport() {
                     <Pagination count={1337} color="primary" sx={{ mt: 2 }} />
                 </Box>
             </Box>
-        </Root>
+        </Root >
     );
 }
 

@@ -1,23 +1,44 @@
-import React from 'react'
-import { Box, TextField, InputAdornment, Divider, Button } from '@mui/material'
+import React, { useEffect, useState } from 'react'
+import { Box, TextField, InputAdornment, Button, IconButton } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from "@mui/material/Typography";
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import Paper from '@mui/material/Paper';
-import { styled } from '@mui/material/styles';
+import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
+import styled from '@mui/system/styled';
+import userImage from '../../Assets/man.png'
 
-import EnhancedTable from '../../Componenets/UsersData';
 
-const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    color: theme.palette.text.secondary,
-}));
+import { DataGrid } from '@mui/x-data-grid';
+
+import { UserServices } from '../../Services/User/UserServices';
+import { useNavigate } from 'react-router-dom';
+
+
 
 const Root = styled(Box)({
+    "& .userImage": {
+        borderRadius: "50px"
+    },
+    "& .MuiDataGrid-topContainer ": {
+        backgroundColor: "#2f80ed !important"
+    },
+    "& .MuiDataGrid-columnHeader": {
+        color: "white",
+        backgroundColor: "#2f80ed"
+    },
+    "& .MuiDataGrid-footerContainer": {
+        // backgroundColor: "#d6dcd399"
+    },
+    "& .MuiDataGrid-iconSeparator": {
+        display: "none"
+
+    },
+    "& .MuiDataGrid-cell": {
+        display: "flex"
+
+    },
     margin: 0,
     padding: 0,
     "& .mainContainer": {
@@ -42,12 +63,76 @@ const Root = styled(Box)({
 
 });
 const User = () => {
-
+    const [user, setUser] = useState({
+        list: [],
+        filterList: [],
+        detail: {}
+    })
+    let sv = [
+        { _id: 1, userName: "sdjks", fullName: "kjdhj", email: "msdn", status: "ksdj", edit: "msdn" }
+    ]
     const [age, setAge] = React.useState('');
+    let navigate = useNavigate()
+    const columns = [
+        {
+            field: 'firstName', headerName: 'Name', flex: 1, renderCell: (params) => (
+                <Box sx={{ display: "flex", justifyContent: "start", gap: "10px", alignItems: "center" }}>
+                    <Box sx={{ height: "40px", width: "40px" }}>
+                        <img className='userImage' src={userImage} sx={{ borderRadius: "50px !important" }} height='100%' width='100%' alt='lol' />
+                    </Box>
+                    <Typography variant="body1" sx={{ color: '#000000' }}>{params.value} {params.row.lastName}</Typography>
+                </Box>
+            )
+        },
 
+        { field: 'department', headerName: 'Department', width: 335, },
+        { field: 'role', headerName: 'Role', width: 335, },
+        { field: 'email', headerName: 'Email', width: 280, },
+        { field: 'status', headerName: 'Status', width: 230, },
+        {
+            field: '_id', headerName: 'Edit', width: 100, renderCell: (params) => (
+                <IconButton onClick={() => handleOpenDetail(params.value)}>
+
+                    <ModeEditOutlineOutlinedIcon />
+                </IconButton>
+
+            )
+        },
+
+    ];
+    useEffect(() => {
+        getUserList()
+    }, [])
     const handleChange = (event) => {
         setAge(event.target.value);
     };
+
+    const handleOpenDetail = (id) => {
+        navigate("/userinformation", { state: { id: id } })
+    }
+    //Get user List
+
+    const getUserList = async () => {
+        try {
+            let res = await UserServices.getlist()
+            if (res.success) {
+                setUser({ ...user, list: res.data, filterList: res.data })
+            } else {
+                // alert("failed")
+            }
+
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+
+    const handleSearch = (event) => {
+        let { value } = event.target
+        let filterDataByFirstName = user?.list?.filter(item => item?.firstName?.toLowerCase().includes(value?.toLowerCase()))
+        setUser({ ...user, filterList: filterDataByFirstName })
+    }
+
     return (
         <Root>
             <Box className="mainContainer">
@@ -55,15 +140,14 @@ const User = () => {
                 <Box className="mainBox">
                     {/* --------------------Header Section--------------- */}
                     <Box className="headerSection">
-
                         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-
                             <TextField
                                 sx={{
                                     "& fieldset": { border: 'none' },
                                 }}
                                 className='inputField'
                                 placeholder='Search'
+                                onChange={handleSearch}
                                 InputProps={{
                                     startAdornment: (
                                         <InputAdornment position="start">
@@ -72,7 +156,6 @@ const User = () => {
                                     ),
                                 }}
                             />
-
                         </Box>
                         <Box sx={{
                             display: "flex",
@@ -83,8 +166,8 @@ const User = () => {
                             <Button sx={{
                                 width: "237px",
                                 height: "53px",
-                                textTransform: "lowercase"
-                            }} variant="contained">create user</Button>
+                                textTransform: "none"
+                            }} onClick={() => { navigate('/user-add') }} variant="contained">Create user</Button>
                             <div>
                                 <FormControl sx={{ m: 1, minWidth: 120, backgroundColor: "#fff", color: "#F8F8F8" }}>
                                     <Select
@@ -105,10 +188,26 @@ const User = () => {
                         </Box>
                     </Box>
                     {/* --------------------Header Section Complete--------------- */}
+                    <DataGrid
+                        minHeight={40}
+                        rows={user?.filterList}
+                        columns={columns}
+                        getRowId={(e) => e._id}
+                        // initialState={{
+                        //     pagination: {
+                        //         paginationModel: {
+                        //             pageSize: 5,
+                        //         },
+                        //     },
+                        // }}
+                        pageSizeOptions={[5]}
+                        disableColumnFilter
+                        disableColumnMenu
+                        checkboxSelection
+                        hideFooterPagination
+                    />
                 </Box>
-                <Box>
-                    <EnhancedTable />
-                </Box>
+
             </Box>
         </Root>
     )

@@ -49,7 +49,7 @@ const Root = styled(Box)({
             padding: "10px"
         },
         "& .newClients": {
-            // width: "257px",
+            minwidth: "257px",
             borderRadius: "5px",
             backgroundColor: "#ffffff",
             display: 'flex',
@@ -104,7 +104,6 @@ const Root = styled(Box)({
             borderRadius: "20px",
             backgroundColor: " #FFFFFF",
             padding: "20px",
-
         },
         "& .approvedReport": {
             display: "flex",
@@ -283,15 +282,14 @@ const NewDashboard = () => {
                                             fontWeight: 500,
                                             fontSize: "14px",
                                             color: "#B3B3B3"
-                                        }}>Number of approved activity reports</Typography>
+                                        }}>number of approved</Typography>
                                         <Typography sx={{
-                                            fontSize: "14px",
-                                            fontWeight: 500,
+                                            fontSize: "24px",
+                                            fontWeight: 600,
                                             lineHeight: "32px",
-                                            color: "#0171BB"
+                                            color: "#1B2559"
                                         }}>35</Typography>
                                     </Box>
-
                                 </Box>
                                 <Box sx={{ display: "flex", alignItems: "center", backgroundColor: "#fff", padding: "28px 10px !important", justifyContent: "space-between" }}>
                                     <Box >
@@ -475,7 +473,7 @@ const NewDashboard = () => {
                                                 lineHeight: "24px",
                                                 letteSpacing: "-2%",
                                                 color: "#A3AED0",
-                                                marginBottom: "20px"
+                                                // marginBottom: "20px"
                                             }}>Month of June</Typography>
                                         </Box>
                                         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
