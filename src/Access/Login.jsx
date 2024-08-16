@@ -5,26 +5,41 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/system";
 import Link from "@mui/material/Link";
+import logo1 from "../Assets/cassilogo.png";
 import logo from "../Assets/Caasi-croped-logo.png";
 import { UserServices } from "../Services/User/UserServices";
 import { useNavigate } from "react-router-dom";
 import AuthService from "../Services/AuthServices";
+import AlertSnackbar from "../Componenets/AlertSnackbar";
 
 const Root = styled(Box)({
   margin: 0,
   "& .mainContainer": {
     width: "100%",
-    height: "100vh",
+    height: "calc(100vh - 16px)",
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
+    "& .content1": {
+      display: "grid",
+      backgroundColor: "#0171BC",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "100%",
+      width: "50%",
+      "& .logo1": {
+        display: "flex",
+        justifyContent: "center",
+        width: "200px",
+      },
+      "& .sideLogo": {
+        borderRadius: "100px",
+      },
+    },
     "& .content": {
       display: "grid",
       width: "25vw",
+      margin: "auto",
       height: "auto",
-      padding: "20px", // Added padding for spacing inside the border
-      border: "2px solid transparent", // Invisible border
-      borderRadius: "10px", // Optional: rounded corners
       "& .logo": {
         display: "flex",
         justifyContent: "center",
@@ -48,10 +63,14 @@ const Root = styled(Box)({
     },
   },
 });
-
 const Login = () => {
   const [data, setData] = useState({});
   const [condition, setCondition] = useState(false);
+  const [alert, setAlert] = useState({
+    alertColor: "primary",
+    alertMessage: "",
+    isAlertOpen: false,
+  });
   const navigate = useNavigate();
 
   const handleChange = (event) => {
@@ -62,11 +81,14 @@ const Login = () => {
     try {
       let res = await UserServices.loginUser(data);
       if (res.success) {
-        alert(res.message);
-        AuthService.logIn(res.data.user, res.data.accessToken);
-        navigate("/dashboard");
+
+        setAlert({ ...alert, isAlertOpen: true, alertColor: "success", alertMessage: res.message });
+        AuthService.logIn(res.data.user, res.data.accessToken)
+        setTimeout(() => {
+          navigate("/dashboard")
+        }, 3000)
       } else {
-        alert(res.error);
+        setAlert({ ...alert, isAlertOpen: true, alertColor: "error", alertMessage: res.error });
       }
     } catch (error) {
       console.log(error);
@@ -78,6 +100,20 @@ const Login = () => {
   return (
     <Root>
       <Box className="mainContainer">
+        <Box className="content1">
+          <Box
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "200px",
+              width: "200px",
+              borderRadius: "50px",
+            }}
+          >
+            <img className="sideLogo" src={logo1} width="100%" alt="logo" />
+          </Box>
+        </Box>
         <Box className="content">
           <Box
             style={{
@@ -98,7 +134,7 @@ const Login = () => {
               </Box>
             </Box>
             <Box sx={{ textAlign: "start", marginBottom: 3 }}>
-              <Typography variant="h4">Welcome!</Typography>
+              <Typography variant="h4">Wellcome!</Typography>
             </Box>
           </Box>
 
@@ -156,6 +192,9 @@ const Login = () => {
           >
             Login
           </Button>
+        </Box>
+        <Box>
+          <AlertSnackbar alert={alert} setAlert={setAlert} />
         </Box>
       </Box>
     </Root>
