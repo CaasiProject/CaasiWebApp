@@ -10,7 +10,7 @@ import logo from "../Assets/Caasi-croped-logo.png";
 import { UserServices } from "../Services/User/UserServices";
 import { useNavigate } from "react-router-dom";
 import AuthService from "../Services/AuthServices";
-import AlertSnackbar from "../Componenets/AlertSnackbar";
+import AlertSnackbar from "../Components/AlertSnackbar";
 
 const Root = styled(Box)({
   margin: 0,
